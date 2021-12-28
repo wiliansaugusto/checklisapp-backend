@@ -6,14 +6,17 @@ import com.learning.api.checklistappapi.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.bind.ValidationException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 
-@RestController("/api/v1/checklist")
+@RestController
+@RequestMapping("/api/v1/categories/")
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -42,15 +45,17 @@ public class CategoryController {
     }
 
     @PutMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateCategoruy(@RequestBody CategoryDTO categoryDTO) {
-
+    public ResponseEntity<Void> updateCategory(@RequestBody CategoryDTO categoryDTO) throws ValidationException {
+        if (!StringUtils.hasText(categoryDTO.getGuid())) {
+            throw new ValidationException("Name vazio ou nulo");
+        }
         this.categoryService.updateCategory(categoryDTO.getGuid(), categoryDTO.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
 
     @DeleteMapping(value = "{guid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteCategory(@PathVariable String guid){
+    public ResponseEntity<Void> deleteCategory(@PathVariable String guid) {
         this.categoryService.deleteCategory(guid);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

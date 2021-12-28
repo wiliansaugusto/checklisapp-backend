@@ -1,8 +1,9 @@
 package com.learning.api.checklistappapi.controller;
 
-import com.learning.api.checklistappapi.dto.ChecklistItemDTO.ChecklistItemItemDTO;
+import com.learning.api.checklistappapi.dto.ChecklistItemItemDTO;
 import com.learning.api.checklistappapi.entity.ChecklistItemEntity;
 import com.learning.api.checklistappapi.service.ChecklistItemService;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@RestController("/api/v1/checklist")
+@RestController
+@RequestMapping("/api/v1/checklist/")
 public class ChecklistItemController {
 
     private ChecklistItemService checklistItemService;

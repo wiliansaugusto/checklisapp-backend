@@ -12,4 +12,5 @@ public interface CategoryRepository extends PagingAndSortingRepository<CategoryE
     Optional<CategoryEntity>findByGuid( String guid);
 
 
+    Optional<CategoryEntity> findByName(String categoryName);
 }

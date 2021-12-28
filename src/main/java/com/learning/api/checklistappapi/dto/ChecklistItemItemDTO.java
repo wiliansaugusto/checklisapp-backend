@@ -1,10 +1,12 @@
-package com.learning.api.checklistappapi.dto.ChecklistItemDTO;
+package com.learning.api.checklistappapi.dto;
 
 import com.learning.api.checklistappapi.entity.CategoryEntity;
 import com.learning.api.checklistappapi.entity.ChecklistItemEntity;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Builder
@@ -12,10 +14,13 @@ import java.time.LocalDate;
 public class ChecklistItemItemDTO {
 
     private String guid;
+    @NotNull(message = "Checagem Obrigatoria é obrigatorio")
     private Boolean isCompleted;
+    @NotNull(message = "Deadline é obrigatorio")
     private LocalDate deadline;
     private LocalDate postDate;
     private String categoryGuid;
+    @NotBlank(message = "Descrição nao pode ser nula ou vazia")
     private String description;
     private CategoryEntity category;
 
