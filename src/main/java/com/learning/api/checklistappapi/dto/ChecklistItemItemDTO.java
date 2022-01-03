@@ -22,7 +22,9 @@ public class ChecklistItemItemDTO {
     private String categoryGuid;
     @NotBlank(message = "Descrição nao pode ser nula ou vazia")
     private String description;
-    private CategoryEntity category;
+    private CategoryDTO category;
+
+
 
     public static Object toDTO(ChecklistItemEntity checklistItemEntity) {
         return ChecklistItemItemDTO.builder()
@@ -30,7 +32,12 @@ public class ChecklistItemItemDTO {
                 .isCompleted(checklistItemEntity.getIsCompleted())
                 .deadline(checklistItemEntity.getDeadline())
                 .postDate(checklistItemEntity.getPostedDate())
-                .categoryGuid(checklistItemEntity.getCategory().getGuid())
+                .category(CategoryDTO.
+                        builder()
+                        .guid(checklistItemEntity.getCategory().getGuid())
+                        .name(checklistItemEntity.getCategory().getName())
+                        .build()
+                )
                 .description(checklistItemEntity.getDescription())
                 .build();
 

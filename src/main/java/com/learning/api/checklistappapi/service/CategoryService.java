@@ -39,7 +39,9 @@ public class CategoryService {
     }
 
     public CategoryEntity updateCategory(String guid, String name) {
-        if (guid == null || StringUtils.hasText(name)) {
+        System.out.println(guid);
+        System.out.println(name);
+        if (guid == null || !StringUtils.hasText(name)) {
             throw new IllegalArgumentException("Dados de atualização invalidos");
         }
         CategoryEntity retriveCategory = this.categoryRepository.findByGuid(guid).orElseThrow(

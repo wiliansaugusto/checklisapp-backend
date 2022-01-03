@@ -1,13 +1,16 @@
 package com.learning.api.checklistappapi.entity;
 
 
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(indexes = {@Index(name = "IDX_GUID_CAT", columnList = "guid")})
 public class CategoryEntity extends BaseEntity{

@@ -1,12 +1,12 @@
 package com.learning.api.checklistappapi.service;
 
+import com.learning.api.checklistappapi.dto.CategoryDTO;
 import com.learning.api.checklistappapi.entity.CategoryEntity;
 import com.learning.api.checklistappapi.entity.ChecklistItemEntity;
 import com.learning.api.checklistappapi.exception.ResourceNotFoundException;
 import com.learning.api.checklistappapi.repository.CategoryRepository;
 import com.learning.api.checklistappapi.repository.ChecklistItemRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,9 +19,13 @@ import java.util.UUID;
 public class ChecklistItemService {
     @Autowired
     private ChecklistItemRepository checklistItemRepository;
+    @Autowired
     private CategoryRepository categoryRepository;
 
-    private void validChecklistItes(String description, String categoryGuid, Boolean isCompleted, LocalDate deadline) {
+    private void validChecklistItes(String description,
+                                    String categoryGuid,
+                                    Boolean isCompleted,
+                                    LocalDate deadline) {
         if (!StringUtils.hasText(description)) {
             throw new IllegalArgumentException("Descrição esta com valor nullo ou vazio");
         }
@@ -31,13 +35,16 @@ public class ChecklistItemService {
         if (deadline == null) {
             throw new IllegalArgumentException("Checklist deadline tem valor nulo ou vazio");
         }
-        if (categoryGuid == null) {
+        if (!StringUtils.hasText(categoryGuid)) {
             throw new IllegalArgumentException("categoryGuid tem valor nulo ou vazio");
         }
 
     }
 
-    public ChecklistItemEntity addNewChecklistItem(String description, String categoryGuid, Boolean isCompleted, LocalDate postedDate, LocalDate deadline) {
+    public ChecklistItemEntity addNewChecklistItem(String description,
+                                                   String categoryGuid,
+                                                   Boolean isCompleted,
+                                                   LocalDate deadline) {
         this.validChecklistItes(description, categoryGuid, isCompleted, deadline);
         CategoryEntity retrivedCategory = this.categoryRepository.findByGuid(categoryGuid).orElseThrow(
                 () -> new ResourceNotFoundException("Categoria não encontrada")
@@ -48,6 +55,7 @@ public class ChecklistItemService {
         checklistItemEntity.setDeadline(deadline);
         checklistItemEntity.setPostedDate(LocalDate.now());
         checklistItemEntity.setCategory(retrivedCategory);
+        checklistItemEntity.setIsCompleted(isCompleted);
         log.debug("Adiconado novo item no checjlist [checklistItem = {}]", checklistItemEntity);
         return this.checklistItemRepository.save(checklistItemEntity);
 
@@ -108,4 +116,18 @@ public class ChecklistItemService {
 
      }
 
+    public void updateIsCompleteStatus(String guid, boolean isCompleted) {
+        if(!StringUtils.hasText(guid)){
+            throw new IllegalArgumentException("Guid nao pode ser nula ou vazia");
+        }
+        ChecklistItemEntity resp = this.checklistItemRepository.findByGuid(guid).orElseThrow(
+                ()-> new ResourceNotFoundException("Checklist Item não encontrado")
+        );
+        log.debug("update checklist item update status [guid={}]", guid);
+
+        resp.setIsCompleted(isCompleted);
+        log.debug(resp.getDescription(), resp.getIsCompleted());
+        this.checklistItemRepository.save(resp);
+
+    }
 }

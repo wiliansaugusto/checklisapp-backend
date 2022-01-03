@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends PagingAndSortingRepository<CategoryEntity, Long> {
 
-    Optional<CategoryEntity>findByGuid( String guid);
+    Optional<CategoryEntity>findByGuid(String guid);
 
 
     Optional<CategoryEntity> findByName(String categoryName);

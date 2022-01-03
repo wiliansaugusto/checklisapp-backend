@@ -1,6 +1,7 @@
 package com.learning.api.checklistappapi.controller;
 
 import com.learning.api.checklistappapi.dto.CategoryDTO;
+import com.learning.api.checklistappapi.dto.NewResourceDTO;
 import com.learning.api.checklistappapi.entity.CategoryEntity;
 import com.learning.api.checklistappapi.service.CategoryService;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.stream.StreamSupport;
 
 
 @RestController
-@RequestMapping("/api/v1/categories/")
+@RequestMapping("/v1/api/categories")
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -37,15 +38,17 @@ public class CategoryController {
     }
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> addNewCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<NewResourceDTO> addNewCategory(@RequestBody CategoryDTO categoryDTO) {
 
         CategoryEntity resp = categoryService.addNewCatergory(categoryDTO.getName());
-        return new ResponseEntity<>(resp.getGuid(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new NewResourceDTO(resp.getGuid()), HttpStatus.CREATED);
 
     }
 
     @PutMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateCategory(@RequestBody CategoryDTO categoryDTO) throws ValidationException {
+        System.out.println(categoryDTO.getGuid() + " - "+ categoryDTO.getName());
+
         if (!StringUtils.hasText(categoryDTO.getGuid())) {
             throw new ValidationException("Name vazio ou nulo");
         }

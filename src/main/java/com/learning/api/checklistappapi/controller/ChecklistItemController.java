@@ -1,9 +1,10 @@
 package com.learning.api.checklistappapi.controller;
 
 import com.learning.api.checklistappapi.dto.ChecklistItemItemDTO;
+import com.learning.api.checklistappapi.dto.NewResourceDTO;
+import com.learning.api.checklistappapi.dto.UpdateStatusDTO;
 import com.learning.api.checklistappapi.entity.ChecklistItemEntity;
 import com.learning.api.checklistappapi.service.ChecklistItemService;
-import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RestController
-@RequestMapping("/api/v1/checklist/")
+@RequestMapping("/v1/api/checklist")
 public class ChecklistItemController {
 
     private ChecklistItemService checklistItemService;
@@ -36,16 +37,19 @@ public class ChecklistItemController {
     }
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createNewChecklistItem(@RequestBody ChecklistItemItemDTO checklistItemItemDTO) throws ValidationException {
-        if (checklistItemItemDTO.getCategoryGuid() == null) {
+    public ResponseEntity<NewResourceDTO> createNewChecklistItem(@RequestBody ChecklistItemItemDTO checklistItemItemDTO) throws ValidationException {
+        if (checklistItemItemDTO.getCategory().getGuid() == null) {
             throw new ValidationException("Categoria é nula");
         }
         ChecklistItemEntity resp = this.checklistItemService.addNewChecklistItem(
-                checklistItemItemDTO.getDescription(), checklistItemItemDTO.getCategoryGuid(), checklistItemItemDTO.getIsCompleted()
-                , checklistItemItemDTO.getPostDate(), checklistItemItemDTO.getDeadline());
+                checklistItemItemDTO.getDescription(),
+                checklistItemItemDTO.getCategory().getGuid(),
+                checklistItemItemDTO.getIsCompleted(),
+                checklistItemItemDTO.getDeadline()
+                );
 
 
-        return new ResponseEntity<>(resp.getGuid(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new NewResourceDTO(resp.getGuid()), HttpStatus.CREATED);
 
     }
 
@@ -54,19 +58,23 @@ public class ChecklistItemController {
         if (!StringUtils.hasLength(checklistItemItemDTO.getGuid())) {
             throw new ValidationException("Checklist item obrigatório");
         }
-            this.checklistItemService.updateChecklistItem(checklistItemItemDTO.getGuid(), checklistItemItemDTO.getDescription(),
-                    checklistItemItemDTO.getIsCompleted(), checklistItemItemDTO.getDeadline(),
-                    checklistItemItemDTO.getCategoryGuid() != null ? checklistItemItemDTO.getCategory().getGuid(): null);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+        this.checklistItemService.updateChecklistItem(checklistItemItemDTO.getGuid(), checklistItemItemDTO.getDescription(),
+                checklistItemItemDTO.getIsCompleted(), checklistItemItemDTO.getDeadline(),
+                checklistItemItemDTO.getCategory().getGuid() != null ? checklistItemItemDTO.getCategory().getGuid() : null);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-    @DeleteMapping(value="{guid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteChecklist(@PathVariable String guid){
+    @DeleteMapping(value = "{guid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteChecklist(@PathVariable String guid) {
         this.checklistItemService.deleteChecllistItems(guid);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
+    @PatchMapping(value = "{guid}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UpdateStatusDTO> updateStatusCompleted(@PathVariable String guid, @RequestBody UpdateStatusDTO statusDTO) {
+            this.checklistItemService.updateIsCompleteStatus(guid, statusDTO.isCompleted);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
 
 }
 
