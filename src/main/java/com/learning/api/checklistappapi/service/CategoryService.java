@@ -29,7 +29,7 @@ public class CategoryService {
 
     public CategoryEntity addNewCatergory(String name) {
         if (!StringUtils.hasText(name)) {
-            throw new IllegalArgumentException("Noem da categoria é nulo");
+            throw new IllegalArgumentException("Nome da categoria nao pode ser nula");
         }
         CategoryEntity newCategory = new CategoryEntity();
         newCategory.setGuid(UUID.randomUUID().toString());
